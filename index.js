@@ -2,6 +2,8 @@ const cTables = require('console.table');
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
 const express = require('express');
+const { default: Choice } = require('inquirer/lib/objects/choice');
+const { response } = require('express');
 require('dotenv').config();
 
 app = express();
@@ -18,6 +20,97 @@ const db = mysql.createConnection(
     console.log(`Connected to the org_db database.`)
   );
 
-  db.query('SELECT * FROM employee', function (err, results) {
-    console.log(results);
+  var tableData 
+
+  db.query('show tables', function (err, results) {
+    tableData = results;
+    // console.log(tableData[4].first_name);
+    // console.log(tableData.length)
+    console.table(tableData);
   });
+
+  async function prompt(){
+    inquirer
+      .prompt([
+        {
+          message: "what would you like to do?",
+          type: 'list',
+          choices: ["view all employees","add employee", "view all roles", "add role", "view all departments", "add department"],
+          name: "choice"
+        }
+      ])
+      .then( response => {
+        switch(response.choice){
+          case "view all employees": viewAllEmployees();
+          break;
+          case "add employee": addEmployee();
+          break;
+          case "view all roles": viewAllRoles();
+          break;
+          case "add role": addRole();
+          break;
+          case "view all departments": viewAllDepartments();
+          break;
+          case "add department": addDepartment();
+          break;
+        }
+      })
+  }
+  
+  async function viewAllEmployees(){
+    db.query('select * from employee', function (err,data){
+      console.log("\n")
+      console.table(data);
+    })
+
+    await prompt();
+  }
+  
+  async function addEmployee(){
+    inquirer
+      .prompt([
+        {
+          message: "what is the employees first name?",
+          type: "input",
+          name: "first_name",
+        },
+        {
+          message: "what is the employees last name?",
+          type: "input",
+          name: "last_name"
+        },
+        {
+          type: "input",
+          message: "what is the employees role?", 
+          name: "role",
+        }
+        // {
+
+        // }
+      ])
+
+  }
+  async function viewAllRoles(){
+    db.query('select * from role', function (err,data){
+      console.log("\n")
+      console.table(data);
+    })
+
+    await prompt();
+  }
+  async function addRole(){
+
+  }
+  async function viewAllDepartments(){
+    db.query('select * from department', function (err,data){
+      console.log("\n")
+      console.table(data);
+    })
+
+    await prompt();
+  }
+  async function addDepartment(){
+
+  }
+
+  // prompt()
