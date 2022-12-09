@@ -22,12 +22,12 @@ const db = mysql.createConnection(
 
   var tableData 
 
-  db.query('show tables', function (err, results) {
-    tableData = results;
-    // console.log(tableData[4].first_name);
-    // console.log(tableData.length)
-    console.table(tableData);
-  });
+  // db.query('show tables', function (err, results) {
+  //   tableData = results;
+  //   // console.log(tableData[4].first_name);
+  //   // console.log(tableData.length)
+  //   console.table(tableData);
+  // });
 
   async function prompt(){
     inquirer
@@ -61,13 +61,22 @@ const db = mysql.createConnection(
     db.query('select * from employee', function (err,data){
       console.log("\n")
       console.table(data);
+      prompt()
     })
 
-    await prompt();
+
   }
   
   async function addEmployee(){
-    inquirer
+    db.query('select * from role', function (err, res) {
+      if (err) {
+        console.log(err)
+        return
+      }
+      
+      let roleChoices = res.map((r) => r.title)
+      // console.log(roleChoices)
+      inquirer
       .prompt([
         {
           message: "what is the employees first name?",
@@ -80,23 +89,24 @@ const db = mysql.createConnection(
           name: "last_name"
         },
         {
-          type: "input",
+          type: "list",
           message: "what is the employees role?", 
           name: "role",
+          choices: roleChoices
         }
-        // {
-
-        // }
       ])
+    })
+   
 
   }
   async function viewAllRoles(){
     db.query('select * from role', function (err,data){
       console.log("\n")
       console.table(data);
+      prompt();
     })
 
-    await prompt();
+    
   }
   async function addRole(){
 
@@ -105,12 +115,13 @@ const db = mysql.createConnection(
     db.query('select * from department', function (err,data){
       console.log("\n")
       console.table(data);
+      prompt();
     })
 
-    await prompt();
+    
   }
   async function addDepartment(){
 
   }
 
-  // prompt()
+  prompt()
